@@ -11,12 +11,12 @@ datasource db {
 }
 
 model Theme {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title     String
   creator   User     @relation(fields: [creatorId], references: [id])
-  creatorId Int
+  creatorId String
 	subscribedUsers ThemeSubscriptions[]
 	posts Post[]
 
@@ -25,9 +25,9 @@ model Theme {
 
 model ThemeSubscriptions {
 	theme Theme @relation(fields: [themeId], references: [id])
-	themeId Int
+	themeId String
 	user User @relation(fields: [userId], references: [id])
-	userId Int
+	userId String
 	assignedAt DateTime @default(now())
   assignedBy String
 
@@ -35,26 +35,29 @@ model ThemeSubscriptions {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title     String
   published Boolean  @default(false) //to make drafts. If false, we will display post in list of drafts
   author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+  authorId  String
 	comments Comment[]
 	theme Theme @relation(fields: [themeId], references: [id])
-	themeId Int
+	themeId String
 
 	@@index(fields: [id], type: Hash)
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String    @id @default(cuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   email     String   @unique
   username  String   @unique
+	emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
   posts      Post[]
 	comments Comment[]
 	createdThemes Theme[]
@@ -64,16 +67,51 @@ model User {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 	author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int 
+  authorId  String 
 	parentComment Comment? @relation("ParentChildComments", fields: [parentCommentId], references: [id])
-	parentCommentId Int?  @unique
+	parentCommentId String?  @unique
 	childComments Comment[] @relation("ParentChildComments")
 	post Post @relation(fields: [postId], references: [id])
-	postId Int
+	postId String
 
 	@@index(fields: [id], type: Hash)
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
