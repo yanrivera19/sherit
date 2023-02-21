@@ -51,9 +51,10 @@ model Post {
 
 model User {
   id        String    @id @default(cuid())
+	name      String?
   createdAt DateTime @default(now())
-  email     String   @unique
-  username  String   @unique
+  email     String?   @unique
+  username  String?   @unique
 	emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -61,7 +62,7 @@ model User {
   posts      Post[]
 	comments Comment[]
 	createdThemes Theme[]
-  subscribedThemes     ThemeSubscriptions[]
+  subscribedThemes  ThemeSubscriptions[]
 
 	@@index(fields: [id], type: Hash)
 }
