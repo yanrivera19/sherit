@@ -1,7 +1,13 @@
+"use client";
+
+import PostForm from "./components/PostForm";
+
 export default function Home() {
   return (
-    <main>
-      <h1 className="text-xl text-white font-bold">Hello</h1>
-    </main>
+    <>
+      <main>
+        <PostForm />
+      </main>
+    </>
   );
 }

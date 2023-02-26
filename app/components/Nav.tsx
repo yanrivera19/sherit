@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Login from "./Login";
-import Logged from "./Logged";
+import Login from "../auth/Login";
+import Logged from "../auth/Logged";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth].js";
 
@@ -9,7 +9,9 @@ export default async function Nav() {
   return (
     <nav className="flex justify-between items-center py-8">
       <Link href={"/"}>
-        <h1 className="text-white font-bold text-lg">sherit</h1>
+        <div className="logo-cont">
+          <h1 className="logo">sherit</h1>
+        </div>
       </Link>
       <ul className="flex items-center gap-6">
         {!session?.user && <Login />}
